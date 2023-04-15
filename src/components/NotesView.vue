@@ -2,23 +2,24 @@
     <main>
         <div v-if="showModal" class="overlay">
             <div class="modal">
-                <textarea v-model="newNote" name="note" id="note" cols="30" rows="10"></textarea>
+                <textarea v-model.trim="newNote" name="note" id="note" cols="30" rows="10"></textarea>
+                <p v-if="errorMessage">{{ errorMessage }}</p>
                 <button @click="addNote"> Notiz hinzufügen </button>
                 <button class="close" @click="showModal = false"> Schließen </button>
             </div>
         </div>
-            <header>
-                <div class="container"></div>
-                <h1>Meine persönlichen Notizen</h1>
-                <button @click="showModal = true">+</button>
-            </header>
-            <br>
-            <div class="cards-container">
-                <div v-for = "note in notes" :key="note.id" class="card" :style="{backgroundColor: note.backgroundColor}" >
-                    <p class="main-text"> {{ note.text }}</p>
-                    <p class="date"> {{ note.date }}</p>
-                </div>
+        <header>
+            <div class="container"></div>
+            <h1>Meine persönlichen Notizen</h1>
+            <button @click="showModal = true">+</button>
+        </header>
+        <br>
+        <div class="cards-container">
+            <div v-for="note in notes" :key="note.id" class="card" :style="{ backgroundColor: note.backgroundColor }">
+                <p class="main-text"> {{ note.text }}</p>
+                <p class="date"> {{ note.date }}</p>
             </div>
+        </div>
     </main>
 </template>
 
@@ -30,12 +31,15 @@ const showModal = ref(false);
 const newNote = ref("");
 const notes = ref([]);
 const date = new Date();
+const errorMessage = ref("");
+
 function getRandomColor() {
     return "hsl(" + Math.random() * 360 + ", 100%, 75%)";
 }
+
 const addNote = () => {
-    if(newNote.value <= 10) {
-        return
+    if (newNote.value.length <= 10) {
+        return errorMessage.value = "Note needs to be 10 characters or more"
     }
     notes.value.push({
         id: Math.floor(Math.random() * 1000000),
@@ -46,9 +50,7 @@ const addNote = () => {
     showModal.value = false;
     newNote.value = ""
 }
-async function zumDashboard() {
-  await router.push("/dashboard");
-}
+
 </script>
 
 <style scoped>
@@ -56,6 +58,11 @@ main {
     height: 100vh;
     width: 100vw;
 }
+
+main header {
+    padding-left: 15%;
+}
+
 .container {
     max-width: 1000px;
     padding: 10px;
@@ -68,6 +75,7 @@ h1 {
     margin-bottom: 25px;
     font-size: 50px;
 }
+
 header button {
     border: none;
     padding: 10px;
@@ -82,6 +90,7 @@ header button {
     position: relative;
 
 }
+
 .card {
     width: 225px;
     height: 225px;
@@ -95,24 +104,28 @@ header button {
     margin-left: 20px;
     margin-bottom: 20px;
 }
+
 .date {
     font-size: 12.5px;
     font-weight: bold;
 }
+
 .cards-container {
     display: flex;
     flex-wrap: wrap;
 }
+
 .overlay {
     position: absolute;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.77);
-    z-index: 10;
+    /* z-index: 10; */
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding-left: 18%;
 }
+
 .modal {
     width: 750px;
     background-color: white;
@@ -122,6 +135,7 @@ header button {
     display: flex;
     flex-direction: column;
 }
+
 .modal button {
     padding: 10px 20px;
     font-size: 20px;
@@ -132,9 +146,14 @@ header button {
     cursor: pointer;
     margin-top: 15px;
 }
+
 .modal .close {
     background-color: rgb(193, 15, 15);
     margin-top: 7px;
+}
+
+.modal p{
+    color: rgb(193, 15, 15);
 }
 
 </style>
